@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aarush Sharma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0e0e0f;
+      --card: #161618;
+      --card-2: #1c1c1f;
+      --ink: #f0efe8;
+      --ink-2: #a8a8a0;
+      --ink-3: #5c5c58;
+      --ink-4: #333332;
+      --border: #272726;
+      --accent: #d4a853;
+      --accent-dim: rgba(212,168,83,0.1);
+      --font: 'Inter', -apple-system, sans-serif;
+      --r: 14px;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+    /* DOCK */
+    .dock { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 100; background: rgba(22,22,24,0.9); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 40px; padding: 10px 20px; display: flex; align-items: center; gap: 6px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+    .dock a { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; color: var(--ink-3); text-decoration: none; transition: background 0.15s, color 0.15s; }
+    .dock a:hover { background: var(--card-2); color: var(--ink); }
+    .dock-sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+
+    /* LAYOUT */
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 20px 120px; display: flex; flex-direction: column; gap: 10px; }
+    .card { background: var(--card); border-radius: var(--r); border: 1px solid var(--border); overflow: hidden; }
+    .card-inner { padding: 28px 32px; }
+    .section-title { font-size: 17px; font-weight: 600; text-align: center; margin-bottom: 4px; color: var(--ink); }
+    .section-sub { font-size: 12px; color: var(--ink-3); text-align: center; margin-bottom: 24px; }
+
+    /* HERO */
+    .hero-card .card-inner { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 44px 32px 36px; }
+    .avatar { width: 76px; height: 76px; border-radius: 50%; background: linear-gradient(135deg, #1e2a3a, #2a1e3a); margin-bottom: 18px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 600; color: var(--accent); border: 1px solid var(--border); }
+    .hero-name { font-size: 24px; font-weight: 600; margin-bottom: 5px; letter-spacing: -0.3px; }
+    .hero-role { font-size: 12px; color: var(--ink-3); margin-bottom: 16px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; }
+    .hero-bio { font-size: 13.5px; color: var(--ink-2); line-height: 1.75; max-width: 500px; margin-bottom: 24px; }
+    .hero-bio strong { color: var(--ink); font-weight: 500; }
+    .simple-hero-line { max-width: 540px; margin-top: 6px; margin-bottom: 24px; font-size: 14px; color: var(--ink-2); line-height: 1.7; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .badge { font-size: 11px; font-weight: 500; color: var(--ink-3); background: var(--card-2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; text-decoration: none; transition: all 0.15s; }
+    .badge:hover { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+
+    /* STATUS PILL */
+    .status-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: #5a9e6f; background: rgba(90,158,111,0.1); border: 1px solid rgba(90,158,111,0.2); border-radius: 20px; padding: 3px 10px; margin-bottom: 14px; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #5a9e6f; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* ABOUT */
+    .about-toggle { display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 11px; color: var(--ink-3); cursor: pointer; user-select: none; transition: color 0.15s; }
+    .about-toggle:hover { color: var(--ink); }
+    .about-toggle svg { transition: transform 0.2s; }
+    .about-toggle.open svg { transform: rotate(180deg); }
+    .about-body { font-size: 13px; color: var(--ink-2); line-height: 1.8; display: flex; flex-direction: column; gap: 12px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.2s; }
+    .about-body.open { max-height: 800px; margin-top: 18px; }
+    .about-body strong { color: var(--ink); font-weight: 500; }
+
+    /* STACK */
+    .stack-showcase { position: relative; padding: 6px 0 4px; }
+    .stack-marquee-shell { position: relative; overflow: hidden; border-radius: 12px; background: linear-gradient(90deg, rgba(28,28,31,0.45), rgba(28,28,31,0.9), rgba(28,28,31,0.45)); border: 1px solid var(--border); padding: 18px 0; margin-top: 18px; }
+    .stack-marquee-shell::before,
+    .stack-marquee-shell::after { content: ""; position: absolute; top: 0; bottom: 0; width: 56px; z-index: 2; pointer-events: none; }
+    .stack-marquee-shell::before { left: 0; background: linear-gradient(90deg, var(--card), transparent); }
+    .stack-marquee-shell::after { right: 0; background: linear-gradient(270deg, var(--card), transparent); }
+    .stack-marquee { display: flex; width: max-content; animation: stack-scroll 26s linear infinite; }
+    .stack-marquee:hover { animation-play-state: paused; }
+    .stack-track { display: flex; align-items: center; gap: 34px; padding: 0 17px; }
+    .stack-orb { width: 58px; height: 58px; border-radius: 16px; display: flex; align-items: center; justify-content: center; background: rgba(240,239,232,0.03); border: 1px solid rgba(240,239,232,0.06); flex-shrink: 0; position: relative; }
+    .stack-orb img { width: 34px; height: 34px; object-fit: contain; filter: brightness(0.92); }
+    .stack-orb svg { width: 34px; height: 34px; }
+    .stack-orb:hover { border-color: rgba(212,168,83,0.45); background: var(--accent-dim); }
+    .stack-orb::after { content: attr(data-label); position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%); background: #0b0b0c; color: var(--ink); border: 1px solid var(--border); border-radius: 6px; padding: 3px 7px; font-size: 10px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+    .stack-orb:hover::after { opacity: 1; }
+    @keyframes stack-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .stack-toggle-wrap { display: flex; justify-content: center; margin-top: 16px; }
+    .stack-toggle { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border); background: var(--card-2); color: var(--ink-3); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
+    .stack-toggle:hover, .stack-toggle.open { color: var(--accent); border-color: rgba(212,168,83,0.55); background: var(--accent-dim); }
+    .stack-grid-wrap { max-height: 0; overflow: hidden; transition: max-height 0.45s ease, margin-top 0.2s; }
+    .stack-grid-wrap.open { max-height: 900px; margin-top: 22px; }
+    .stack-category { margin-bottom: 24px; }
+    .stack-category:last-child { margin-bottom: 0; }
+    .stack-cat-title { font-size: 12px; font-weight: 600; text-align: center; margin-bottom: 3px; color: var(--ink); }
+    .stack-cat-sub { font-size: 11px; color: var(--ink-3); text-align: center; margin-bottom: 16px; }
+    .stack-icons { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; }
+    .stack-icon { display: flex; flex-direction: column; align-items: center; gap: 7px; width: 56px; }
+    .stack-icon-img { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; }
+    .stack-icon-img img { width: 38px; height: 38px; object-fit: contain; filter: brightness(0.9); transition: filter 0.15s; }
+    .stack-icon-img svg { width: 38px; height: 38px; }
+    .stack-icon:hover .stack-icon-img img { filter: brightness(1.1); }
+    .stack-icon span { font-size: 10px; color: var(--ink-3); text-align: center; line-height: 1.2; }
+    .stack-divider { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+    /* ENTRIES */
+    .entry-list { display: flex; flex-direction: column; }
+    .entry { display: flex; align-items: flex-start; gap: 13px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .entry:last-child { border-bottom: none; padding-bottom: 0; }
+    .entry:first-child { padding-top: 0; }
+    .entry-logo { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; overflow: hidden; }
+    .entry-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .entry-logo.brand { width: 52px; height: 36px; background: #f7f7f2; padding: 6px; border-color: #e6e3d7; }
+    .entry-logo.brand img { width: 100%; height: 100%; object-fit: contain; }
+    .entry-logo.brand.apl img { transform: scale(1.08); }
+    .entry-logo.brand.umd img { transform: scale(1.02); }
+    .entry-body { flex: 1; min-width: 0; }
+    .entry-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .entry-sub { font-size: 12px; color: var(--ink-3); }
+    .entry-date { font-size: 11px; color: var(--ink-4); white-space: nowrap; margin-left: auto; padding-left: 8px; padding-top: 2px; }
+
+    /* PROJECTS */
+    .project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .project-tile { border: 1px solid var(--border); border-radius: 10px; padding: 18px; text-decoration: none; color: inherit; transition: border-color 0.15s, background 0.15s; display: flex; flex-direction: column; gap: 7px; background: var(--card-2); }
+    .project-tile:hover { border-color: var(--ink-4); background: #202023; }
+    .project-tile-header { display: flex; align-items: center; justify-content: space-between; }
+    .project-tile-name { font-size: 13px; font-weight: 600; }
+    .project-tile-arrow { font-size: 12px; color: var(--ink-3); }
+    .project-tile-desc { font-size: 12px; color: var(--ink-3); line-height: 1.55; flex: 1; }
+    .project-tile-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .tag { font-size: 10px; font-weight: 500; color: var(--ink-3); background: var(--border); border-radius: 4px; padding: 2px 7px; }
+    .empty-state { border: 1px dashed var(--border); border-radius: 10px; padding: 28px 18px; text-align: center; background: var(--card-2); }
+    .empty-state-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 5px; }
+    .empty-state-sub { font-size: 12px; color: var(--ink-3); line-height: 1.6; }
+
+    /* CONTACT */
+    .contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .contact-tile { border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 6px; background: var(--card-2); transition: border-color 0.15s; }
+    .contact-tile:hover { border-color: var(--accent); }
+    .contact-tile-label { font-size: 10px; font-weight: 500; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; }
+    .contact-tile-value { font-size: 12px; font-weight: 500; word-break: break-all; }
+
+    /* QUOTE CARD */
+    .quote-card .card-inner { padding: 22px 32px; display: flex; align-items: center; gap: 12px; }
+    .quote-text { font-size: 12px; color: var(--ink-3); font-style: italic; line-height: 1.6; }
+    .quote-accent { width: 3px; height: 40px; background: var(--accent); border-radius: 2px; flex-shrink: 0; opacity: 0.6; }
+
+    @media (max-width: 520px) {
+      .page { padding: 24px 12px 100px; }
+      .card-inner { padding: 20px 18px; }
+      .project-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr 1fr; }
+      .stack-track { gap: 24px; }
+      .stack-orb { width: 52px; height: 52px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="card hero-card">
+    <div class="card-inner">
+      <div class="avatar">:)</div>
+      <div class="hero-name">Aarush Sharma.</div>
+      <p class="hero-bio simple-hero-line">
+        Second-year Mechanical Engineering student at UMD with interests in embedded systems, wireless communication, and software.
+      </p>
+      <div class="badge-row">
+        <a class="badge" href="https://github.com/" target="_blank">GitHub</a>
+        <a class="badge" href="https://www.linkedin.com/in/aarush-sharma-456072313/" target="_blank">LinkedIn</a>
+        <a class="badge" href="mailto:aarushs@terpmail.umd.edu">Email</a>
+        <a class="badge" href="Aarush_Sharma_Resume.pdf" target="_blank">Résumé ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="card">
+    <div class="card-inner">
+      <div class="section-title">About.</div>
+      <div class="about-toggle" id="aboutToggle" onclick="toggleAbout()">
+        <span id="aboutLabel">Show</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="about-body" id="aboutBody">
+        <p>idk.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUOTE -->
+  <div class="card quote-card">
+    <div class="card-inner">
+      <div class="quote-accent"></div>
+      <div class="quote-text">"Engineering taught me to understand systems. Finance taught me to question incentives. Software taught me to build before I overthink."</div>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="card stack-card">
+    <div class="card-inner">
+      <div class="section-title">Toolkit.</div>
+      <div class="section-sub">A cleaner snapshot of the tools I use for engineering, software, and hardware projects.</div>
+
+      <div class="stack-showcase">
+        <div class="stack-marquee-shell" aria-label="Scrolling list of technologies">
+          <div class="stack-marquee">
+            <div class="stack-track">
+              <div class="stack-orb" data-label="Python"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" alt="Python" /></div>
+              <div class="stack-orb" data-label="Java"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" alt="Java" /></div>
+              <div class="stack-orb" data-label="MATLAB"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/matlab/matlab-original.svg" alt="MATLAB" /></div>
+              <div class="stack-orb" data-label="Arduino"><svg viewBox="0 0 38 38" fill="none" aria-label="Arduino icon"><rect width="38" height="38" rx="8" fill="#102425" stroke="#333"/><path d="M14 15c-4 0-6 3-6 4s2 4 6 4c3 0 5-4 5-4s2 4 5 4c4 0 6-3 6-4s-2-4-6-4c-3 0-5 4-5 4s-2-4-5-4Z" stroke="#48c7c8" stroke-width="1.8"/><path d="M11 19h6M21 19h6M24 16v6" stroke="#48c7c8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+              <div class="stack-orb" data-label="RFID"><svg viewBox="0 0 38 38" fill="none" aria-label="RFID icon"><rect width="38" height="38" rx="8" fill="#1a1e2a" stroke="#333"/><path d="M12 14c4-4 10-4 14 0M15 18c2.5-2.5 5.5-2.5 8 0M18.5 22h1" stroke="#d4a853" stroke-width="2" stroke-linecap="round"/><rect x="11" y="23" width="16" height="6" rx="2" fill="#d4a853" opacity=".25"/></svg></div>
+              <div class="stack-orb" data-label="Fusion 360"><svg viewBox="0 0 38 38" fill="none" aria-label="Fusion 360 icon"><rect width="38" height="38" rx="8" fill="#251708" stroke="#333"/><path d="M12 12h15l-5 6h5l-9 10 2-7h-8V12Z" fill="#f28c28"/><path d="M12 12v9h8" stroke="#ffd19a" stroke-width="1" opacity=".65"/></svg></div>
+              <div class="stack-orb" data-label="JavaScript"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" alt="JavaScript" /></div>
+              <div class="stack-orb" data-label="HTML"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" alt="HTML" /></div>
+              <div class="stack-orb" data-label="CSS"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS" /></div>
+              <div class="stack-orb" data-label="NumPy"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/numpy/numpy-original.svg" alt="NumPy" /></div>
+              <div class="stack-orb" data-label="Pandas"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/pandas/pandas-original.svg" alt="Pandas" /></div>
+              <div class="stack-orb" data-label="Jupyter"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jupyter/jupyter-original-wordmark.svg" alt="Jupyter" /></div>
+              <div class="stack-orb" data-label="Excel"><svg viewBox="0 0 38 38" fill="none" aria-label="Excel icon"><rect width="38" height="38" rx="8" fill="#1e2a1e" stroke="#333"/><text x="19" y="24" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="#4CAF50">Excel</text></svg></div>
+              <div class="stack-orb" data-label="Git"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" alt="Git" /></div>
+              <div class="stack-orb" data-label="VS Code"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg" alt="VS Code" /></div>
+              <div class="stack-orb" data-label="Vercel"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" alt="Vercel" /></div>
+            </div>
+            <div class="stack-track" aria-hidden="true">
+              <div class="stack-orb" data-label="Python"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" alt="Python" /></div>
+              <div class="stack-orb" data-label="Java"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" alt="Java" /></div>
+              <div class="stack-orb" data-label="MATLAB"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/matlab/matlab-original.svg" alt="MATLAB" /></div>
+              <div class="stack-orb" data-label="Arduino"><svg viewBox="0 0 38 38" fill="none" aria-label="Arduino icon"><rect width="38" height="38" rx="8" fill="#102425" stroke="#333"/><path d="M14 15c-4 0-6 3-6 4s2 4 6 4c3 0 5-4 5-4s2 4 5 4c4 0 6-3 6-4s-2-4-6-4c-3 0-5 4-5 4s-2-4-5-4Z" stroke="#48c7c8" stroke-width="1.8"/><path d="M11 19h6M21 19h6M24 16v6" stroke="#48c7c8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+              <div class="stack-orb" data-label="RFID"><svg viewBox="0 0 38 38" fill="none" aria-label="RFID icon"><rect width="38" height="38" rx="8" fill="#1a1e2a" stroke="#333"/><path d="M12 14c4-4 10-4 14 0M15 18c2.5-2.5 5.5-2.5 8 0M18.5 22h1" stroke="#d4a853" stroke-width="2" stroke-linecap="round"/><rect x="11" y="23" width="16" height="6" rx="2" fill="#d4a853" opacity=".25"/></svg></div>
+              <div class="stack-orb" data-label="Fusion 360"><svg viewBox="0 0 38 38" fill="none" aria-label="Fusion 360 icon"><rect width="38" height="38" rx="8" fill="#251708" stroke="#333"/><path d="M12 12h15l-5 6h5l-9 10 2-7h-8V12Z" fill="#f28c28"/><path d="M12 12v9h8" stroke="#ffd19a" stroke-width="1" opacity=".65"/></svg></div>
+              <div class="stack-orb" data-label="JavaScript"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" alt="JavaScript" /></div>
+              <div class="stack-orb" data-label="HTML"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" alt="HTML" /></div>
+              <div class="stack-orb" data-label="CSS"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS" /></div>
+              <div class="stack-orb" data-label="NumPy"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/numpy/numpy-original.svg" alt="NumPy" /></div>
+              <div class="stack-orb" data-label="Pandas"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/pandas/pandas-original.svg" alt="Pandas" /></div>
+              <div class="stack-orb" data-label="Jupyter"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jupyter/jupyter-original-wordmark.svg" alt="Jupyter" /></div>
+              <div class="stack-orb" data-label="Excel"><svg viewBox="0 0 38 38" fill="none" aria-label="Excel icon"><rect width="38" height="38" rx="8" fill="#1e2a1e" stroke="#333"/><text x="19" y="24" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="#4CAF50">Excel</text></svg></div>
+              <div class="stack-orb" data-label="Git"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" alt="Git" /></div>
+              <div class="stack-orb" data-label="VS Code"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg" alt="VS Code" /></div>
+              <div class="stack-orb" data-label="Vercel"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" alt="Vercel" /></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-toggle-wrap">
+          <button class="stack-toggle" id="stackToggle" onclick="toggleStack()" title="Show full toolkit" aria-label="Show full toolkit">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+              <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+              <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+              <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+            </svg>
+          </button>
+        </div>
+
+        <div class="stack-grid-wrap" id="stackGrid">
+      <div class="stack-category">
+        <div class="stack-cat-title">Languages</div>
+        <div class="stack-cat-sub">Comfortable enough to use in coursework, projects, or small builds</div>
+        <div class="stack-icons">
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" alt="Python" /></div>
+            <span>Python</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" alt="Java" /></div>
+            <span>Java</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/matlab/matlab-original.svg" alt="MATLAB" /></div>
+            <span>MATLAB</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" alt="JavaScript" /></div>
+            <span>JavaScript</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" alt="HTML" /></div>
+            <span>HTML</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS" /></div>
+            <span>CSS</span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="stack-divider" />
+
+      <div class="stack-category">
+        <div class="stack-cat-title">Engineering & Hardware</div>
+        <div class="stack-cat-sub">Closer to my mechanical engineering, RFID, and prototyping work</div>
+        <div class="stack-icons">
+          <div class="stack-icon">
+            <div class="stack-icon-img"><svg viewBox="0 0 38 38" fill="none" aria-label="Arduino icon"><rect width="38" height="38" rx="8" fill="#102425" stroke="#333"/><path d="M14 15c-4 0-6 3-6 4s2 4 6 4c3 0 5-4 5-4s2 4 5 4c4 0 6-3 6-4s-2-4-6-4c-3 0-5 4-5 4s-2-4-5-4Z" stroke="#48c7c8" stroke-width="1.8"/><path d="M11 19h6M21 19h6M24 16v6" stroke="#48c7c8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            <span>Arduino</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><svg viewBox="0 0 38 38" fill="none" aria-label="RFID icon"><rect width="38" height="38" rx="8" fill="#1a1e2a" stroke="#333"/><path d="M12 14c4-4 10-4 14 0M15 18c2.5-2.5 5.5-2.5 8 0M18.5 22h1" stroke="#d4a853" stroke-width="2" stroke-linecap="round"/><rect x="11" y="23" width="16" height="6" rx="2" fill="#d4a853" opacity=".25"/></svg></div>
+            <span>RFID</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><svg viewBox="0 0 38 38" fill="none" aria-label="Fusion 360 icon"><rect width="38" height="38" rx="8" fill="#251708" stroke="#333"/><path d="M12 12h15l-5 6h5l-9 10 2-7h-8V12Z" fill="#f28c28"/><path d="M12 12v9h8" stroke="#ffd19a" stroke-width="1" opacity=".65"/></svg></div>
+            <span>Fusion 360</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><svg viewBox="0 0 38 38" fill="none" aria-label="Excel icon"><rect width="38" height="38" rx="8" fill="#1e2a1e" stroke="#333"/><text x="19" y="24" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="#4CAF50">Excel</text></svg></div>
+            <span>Excel</span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="stack-divider" />
+
+      <div class="stack-category">
+        <div class="stack-cat-title">Data & Analysis</div>
+        <div class="stack-cat-sub">Tools I use for labs, visualization, and technical analysis</div>
+        <div class="stack-icons">
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/numpy/numpy-original.svg" alt="NumPy" /></div>
+            <span>NumPy</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/pandas/pandas-original.svg" alt="Pandas" /></div>
+            <span>Pandas</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/matplotlib/matplotlib-original.svg" alt="Matplotlib" /></div>
+            <span>Matplotlib</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jupyter/jupyter-original-wordmark.svg" alt="Jupyter" /></div>
+            <span>Jupyter</span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="stack-divider" />
+
+      <div class="stack-category">
+        <div class="stack-cat-title">Web & Workflow</div>
+        <div class="stack-cat-sub">The basics for building, versioning, and deploying small sites</div>
+        <div class="stack-icons">
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="React" /></div>
+            <span>React</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" alt="Git" /></div>
+            <span>Git</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" alt="GitHub" /></div>
+            <span>GitHub</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg" alt="VS Code" /></div>
+            <span>VS Code</span>
+          </div>
+          <div class="stack-icon">
+            <div class="stack-icon-img"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" alt="Vercel" /></div>
+            <span>Vercel</span>
+          </div>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <div class="card">
+    <div class="card-inner">
+      <div class="section-title">Cool Place(s) I've Worked At.</div>
+      <div style="margin-bottom: 20px;"></div>
+      <div class="entry-list">
+
+        <div class="entry">
+          <div class="entry-logo brand apl">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/02/JHU_APL_logo.svg" alt="Johns Hopkins APL logo" onerror="this.style.display='none'; this.parentElement.textContent='APL';" />
+          </div>
+          <div class="entry-body">
+            <div class="entry-name">Johns Hopkins University Applied Physics Laboratory</div>
+            <div class="entry-sub">ASPIRE Intern · Applied research in a national security context</div>
+          </div>
+          <div class="entry-date">2024 – 2025</div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-logo" style="background:#161618; border-color:#343432;">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" aria-label="Opportunity icon">
+              <rect width="34" height="34" rx="9" fill="#161618"/>
+              <path d="M11 15.5H23V23H11V15.5Z" stroke="#d4a853" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M14.5 15.5V12.5C14.5 11.7 15.2 11 16 11H18C18.8 11 19.5 11.7 19.5 12.5V15.5" stroke="#f0efe8" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M15 19H19" stroke="#a8a8a0" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="entry-body">
+            <div class="entry-name">Your Next Role</div>
+            <div class="entry-sub">Open to internships and full-time positions — SWE, quant, fintech</div>
+          </div>
+          <div class="entry-date">2026 →</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="card">
+    <div class="card-inner">
+      <div class="section-title">Education.</div>
+      <div style="margin-bottom: 20px;"></div>
+      <div class="entry-list">
+
+        <div class="entry">
+          <div class="entry-logo brand umd">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/df/University_of_Maryland_wordmark.svg" alt="University of Maryland wordmark" onerror="this.style.display='none'; this.parentElement.textContent='UMD';" />
+          </div>
+          <div class="entry-body">
+            <div class="entry-name">University of Maryland, College Park</div>
+            <div class="entry-sub">B.S. Mechanical Engineering · Finance</div>
+          </div>
+          <div class="entry-date">2025 – 2029</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- WORK IN PROGRESS -->
+  <div class="card">
+    <div class="card-inner">
+      <div class="section-title">Check out my latest projects.</div>
+      <div class="section-sub">Projects will live here once they are ready to show.</div>
+      <div class="empty-state">
+        <div class="empty-state-title">Erm... nothing to see here yet.</div>
+        <div class="empty-state-sub">Still figuring out what deserves a spot here. Check back when I have something worth shipping.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="card">
+    <div class="card-inner">
+      <div class="section-title">Let's Talk.</div>
+      <div class="section-sub">Roles, research, ideas, or just a good conversations about food.</div>
+      <div class="contact-grid">
+        <a class="contact-tile" href="mailto:aarushs@terpmail.umd.edu">
+          <div class="contact-tile-label">Email</div>
+          <div class="contact-tile-value">aarushs@terpmail.umd.edu</div>
+        </a>
+        <a class="contact-tile" href="https://www.linkedin.com/in/aarush-sharma-456072313/" target="_blank">
+          <div class="contact-tile-label">LinkedIn</div>
+          <div class="contact-tile-value">aarush-sharma-456072313</div>
+        </a>
+        <a class="contact-tile" href="https://github.com/" target="_blank">
+          <div class="contact-tile-label">GitHub</div>
+          <div class="contact-tile-value">github.com</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM DOCK -->
+<nav class="dock">
+  <a href="mailto:aarushs@terpmail.umd.edu" title="Email">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+  </a>
+  <a href="Aarush_Sharma_Resume.pdf" target="_blank" title="Resume">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+  </a>
+  <div class="dock-sep"></div>
+  <a href="https://github.com/" target="_blank" title="GitHub">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+  </a>
+  <a href="https://www.linkedin.com/in/aarush-sharma-456072313/" target="_blank" title="LinkedIn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+  </a>
+</nav>
+
+<script>
+  function toggleAbout() {
+    const body = document.getElementById('aboutBody');
+    const toggle = document.getElementById('aboutToggle');
+    const label = document.getElementById('aboutLabel');
+    const isOpen = body.classList.toggle('open');
+    toggle.classList.toggle('open', isOpen);
+    label.textContent = isOpen ? 'Hide' : 'Show';
+  }
+
+  function toggleStack() {
+    const grid = document.getElementById('stackGrid');
+    const button = document.getElementById('stackToggle');
+    const isOpen = grid.classList.toggle('open');
+    button.classList.toggle('open', isOpen);
+    button.setAttribute('title', isOpen ? 'Hide full toolkit' : 'Show full toolkit');
+    button.setAttribute('aria-label', isOpen ? 'Hide full toolkit' : 'Show full toolkit');
+  }
+</script>
+
+</body>
+</html>
